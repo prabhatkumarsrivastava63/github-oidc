@@ -1,0 +1,32 @@
+name: Deploy with OIDC
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Azure Login using OIDC
+        uses: azure/login@v1
+        with:
+          client-id: 836dd7df-f241-4b29-ad1d-5b61f71c5702
+          tenant-id: fdf6dfba-c41a-4bb9-81a9-f6438b781717
+          subscription-id: 3b61af52-47dc-407b-ab78-86f249bf638d
+
+      - name: Create Storage Account
+        run: |
+          az storage account create \
+            --name mystorageoidc123xyz \
+            --resource-group ci-test-rg \
+            --location eastus \
+            --sku Standard_LRS
